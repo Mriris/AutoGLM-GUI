@@ -52,6 +52,11 @@ autoglm-gui --base-url http://localhost:8080/v1
 git clone https://github.com/your-repo/AutoGLM-GUI.git
 cd AutoGLM-GUI
 uv sync
+
+# 构建前端（必须）
+uv run python scripts/build.py
+
+# 启动服务
 uv run autoglm-gui --base-url http://localhost:8080/v1
 ```
 
