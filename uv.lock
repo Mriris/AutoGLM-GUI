@@ -41,7 +41,6 @@ source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "openai" },
-    { name = "phone-agent", git = "https://github.com/zai-org/Open-AutoGLM.git?rev=a3b8e83ee9012319b1fbfb8d4989b73c1435ee23" },
     { name = "pillow" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -50,7 +49,6 @@ dependencies = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.124.0" },
     { name = "openai", specifier = ">=2.9.0" },
-    { name = "phone-agent", git = "https://github.com/zai-org/Open-AutoGLM.git?rev=a3b8e83ee9012319b1fbfb8d4989b73c1435ee23" },
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.38.0" },
 ]
@@ -324,15 +322,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/09/48/516290f38745cc1e72856f50e8afed4a7f9ac396a5a18f39e892ab89dfc2/openai-2.9.0.tar.gz", hash = "sha256:b52ec65727fc8f1eed2fbc86c8eac0998900c7ef63aa2eb5c24b69717c56fa5f", size = 608202, upload-time = "2025-12-04T18:15:09.01Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/59/fd/ae2da789cd923dd033c99b8d544071a827c92046b150db01cfa5cea5b3fd/openai-2.9.0-py3-none-any.whl", hash = "sha256:0d168a490fbb45630ad508a6f3022013c155a68fd708069b6a1a01a5e8f0ffad", size = 1030836, upload-time = "2025-12-04T18:15:07.063Z" },
-]
-
-[[package]]
-name = "phone-agent"
-version = "0.1.0"
-source = { git = "https://github.com/zai-org/Open-AutoGLM.git?rev=a3b8e83ee9012319b1fbfb8d4989b73c1435ee23#a3b8e83ee9012319b1fbfb8d4989b73c1435ee23" }
-dependencies = [
-    { name = "openai" },
-    { name = "pillow" },
 ]
 
 [[package]]
