@@ -100,6 +100,7 @@ export function ScrcpyPlayer({
   // Use ref to store latest callback to avoid useEffect re-running
   const onFallbackRef = useRef(onFallback);
   const fallbackTimeoutRef = useRef(fallbackTimeout);
+  const onStreamReadyRef = useRef(onStreamReady);
 
   /**
    * Convert click coordinates to device coordinates
@@ -608,7 +609,8 @@ export function ScrcpyPlayer({
   useEffect(() => {
     onFallbackRef.current = onFallback;
     fallbackTimeoutRef.current = fallbackTimeout;
-  }, [onFallback, fallbackTimeout]);
+    onStreamReadyRef.current = onStreamReady;
+  }, [onFallback, fallbackTimeout, onStreamReady]);
 
   // Fetch device actual resolution on mount
   useEffect(() => {
@@ -766,8 +768,8 @@ export function ScrcpyPlayer({
           setStatus('connected');
 
           // Notify parent component that video stream is ready
-          if (onStreamReady) {
-            onStreamReady({
+          if (onStreamReadyRef.current) {
+            onStreamReadyRef.current({
               close: () => {
                 ws.close();
               },
@@ -876,8 +878,8 @@ export function ScrcpyPlayer({
           setStatus('disconnected');
 
           // Notify parent component that video stream is disconnected
-          if (onStreamReady) {
-            onStreamReady(null);
+          if (onStreamReadyRef.current) {
+            onStreamReadyRef.current(null);
           }
 
           // Auto-reconnect after 3 seconds
@@ -938,7 +940,7 @@ export function ScrcpyPlayer({
         jmuxerRef.current = null;
       }
     };
-  }, [deviceId, onStreamReady]);
+  }, [deviceId]);
 
   return (
     <div

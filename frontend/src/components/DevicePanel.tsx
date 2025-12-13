@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { ScrcpyPlayer } from './ScrcpyPlayer';
 import type { ScreenshotResponse } from '../api';
 import { getScreenshot } from '../api';
@@ -111,13 +111,20 @@ export function DevicePanel({
   };
 
   // 处理视频流就绪事件
-  const handleVideoStreamReady = (stream: { close: () => void } | null) => {
-    updateDeviceState(deviceId, { videoStream: stream });
-  };
+  const handleVideoStreamReady = useCallback(
+    (stream: { close: () => void } | null) => {
+      updateDeviceState(deviceId, { videoStream: stream });
+    },
+    [deviceId, updateDeviceState]
+  );
 
-  useEffect(() => {
-    // Ensure handleVideoStreamReady has access to latest updateDeviceState
-  }, [updateDeviceState]);
+  // 处理视频流降级到截图模式
+  const handleFallback = useCallback(() => {
+    updateDeviceState(deviceId, {
+      videoStreamFailed: true,
+      useVideoStream: false,
+    });
+  }, [deviceId, updateDeviceState]);
 
   return (
     <div className="flex-1 flex gap-4 p-4 items-center justify-center">
@@ -316,12 +323,7 @@ export function DevicePanel({
               deviceId={deviceId}
               className="w-full h-full"
               enableControl={true}
-              onFallback={() => {
-                updateDeviceState(deviceId, {
-                  videoStreamFailed: true,
-                  useVideoStream: false,
-                });
-              }}
+              onFallback={handleFallback}
               onTapSuccess={() => {
                 updateDeviceState(deviceId, { tapFeedback: 'Tap executed' });
                 setTimeout(

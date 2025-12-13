@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   sendMessageStream,
   initAgent,
@@ -91,29 +91,29 @@ function ChatComponent() {
   };
 
   // 更新特定设备的状态
-  const updateDeviceState = (
-    deviceId: string,
-    updates: Partial<DeviceState>
-  ) => {
-    setDeviceStates(prev => {
-      const newMap = new Map(prev);
-      const currentState = newMap.get(deviceId) || {
-        messages: [],
-        loading: false,
-        error: null,
-        initialized: false,
-        chatStream: null,
-        videoStream: null,
-        screenshot: null,
-        useVideoStream: true,
-        videoStreamFailed: false,
-        displayMode: 'auto' as const,
-        tapFeedback: null,
-      };
-      newMap.set(deviceId, { ...currentState, ...updates });
-      return newMap;
-    });
-  };
+  const updateDeviceState = useCallback(
+    (deviceId: string, updates: Partial<DeviceState>) => {
+      setDeviceStates(prev => {
+        const newMap = new Map(prev);
+        const currentState = newMap.get(deviceId) || {
+          messages: [],
+          loading: false,
+          error: null,
+          initialized: false,
+          chatStream: null,
+          videoStream: null,
+          screenshot: null,
+          useVideoStream: true,
+          videoStreamFailed: false,
+          displayMode: 'auto' as const,
+          tapFeedback: null,
+        };
+        newMap.set(deviceId, { ...currentState, ...updates });
+        return newMap;
+      });
+    },
+    []
+  );
 
   // 当前设备状态的快捷访问
   const currentState = getCurrentDeviceState();
