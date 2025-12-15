@@ -203,7 +203,7 @@ async def video_stream_ws(
                 print(f"  - Total: {len(init_data)} bytes")
 
                 await websocket.send_bytes(init_data)
-                print(f"[video/stream] ✓ Initialization data sent successfully")
+                print("[video/stream] ✓ Initialization data sent successfully")
 
                 # Debug: Save to file
                 if debug_file:
@@ -227,7 +227,7 @@ async def video_stream_ws(
             try:
                 # Read one complete NAL unit
                 # Each WebSocket message = one complete NAL unit (clear semantic boundary)
-                nal_unit = await streamer.read_nal_unit(auto_cache=False)
+                nal_unit = await streamer.read_nal_unit(auto_cache=True)
                 await websocket.send_bytes(nal_unit)
 
                 # Debug: Save to file
