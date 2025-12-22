@@ -1,3 +1,4 @@
+import type { MouseEvent, WheelEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
@@ -63,6 +64,7 @@ export function ScrcpyPlayer({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const reconnectTimerRef = useRef<number | null>(null);
+  const connectDeviceRef = useRef<(() => void) | null>(null);
   const hasReceivedDataRef = useRef(false);
   const suppressReconnectRef = useRef(false);
   const onFallbackRef = useRef(onFallback);
@@ -374,7 +376,7 @@ export function ScrcpyPlayer({
 
         const videoStream = setupVideoStream(metadata);
         videoStream
-          .pipeTo(decoderRef.current.writable as any)
+          .pipeTo(decoderRef.current.writable as WritableStream<VideoPacket>)
           .catch((error: Error) => {
             console.error('[ScrcpyPlayer] Video stream error:', error);
           });
@@ -409,14 +411,21 @@ export function ScrcpyPlayer({
       if (!reconnectTimerRef.current) {
         reconnectTimerRef.current = setTimeout(() => {
           reconnectTimerRef.current = null;
-          connectDevice();
+          connectDeviceRef.current?.();
         }, 3000);
       }
     });
   }, [deviceId, disconnectDevice, createDecoder, setupVideoStream]);
 
   useEffect(() => {
-    connectDevice();
+    connectDeviceRef.current = connectDevice;
+  }, [connectDevice]);
+
+  useEffect(() => {
+    // Use queueMicrotask to avoid synchronous setState within effect
+    queueMicrotask(() => {
+      connectDevice();
+    });
 
     return () => {
       if (moveThrottleTimerRef.current) {
@@ -480,7 +489,7 @@ export function ScrcpyPlayer({
     };
   };
 
-  const handleMouseDown = async (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = async (event: MouseEvent<HTMLDivElement>) => {
     if (!enableControl || status !== 'connected') return;
 
     const coords = mapToDeviceCoordinates(event.clientX, event.clientY);
@@ -497,7 +506,7 @@ export function ScrcpyPlayer({
     }
   };
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
     if (!isDraggingRef.current || status !== 'connected') return;
 
     const now = Date.now();
@@ -539,7 +548,7 @@ export function ScrcpyPlayer({
     });
   };
 
-  const handleMouseUp = async (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseUp = async (event: MouseEvent<HTMLDivElement>) => {
     if (!isDraggingRef.current || status !== 'connected') return;
 
     const coords = mapToDeviceCoordinates(event.clientX, event.clientY);
@@ -565,7 +574,7 @@ export function ScrcpyPlayer({
     }
   };
 
-  const handleMouseLeave = async (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = async (event: MouseEvent<HTMLDivElement>) => {
     if (!isDraggingRef.current || status !== 'connected') return;
 
     const coords = mapToDeviceCoordinates(event.clientX, event.clientY);
@@ -581,7 +590,7 @@ export function ScrcpyPlayer({
     }
   };
 
-  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+  const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
     if (!enableControl || status !== 'connected') return;
 
     event.preventDefault();
