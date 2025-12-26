@@ -33,3 +33,8 @@ logs/
 
 # macOS
 .DS_Store
+
+# ideas
+.idea/
+.vscode/
+.claude/
