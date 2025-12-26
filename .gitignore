@@ -38,3 +38,6 @@ logs/
 .idea/
 .vscode/
 .claude/
+
+# Environment variables
+.env
