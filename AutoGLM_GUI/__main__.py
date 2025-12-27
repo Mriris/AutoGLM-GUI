@@ -6,8 +6,22 @@ import socket
 import threading
 import time
 import webbrowser
+from pathlib import Path
 
 from AutoGLM_GUI import __version__
+
+# 在其他导入之前加载 .env 文件
+try:
+    from dotenv import load_dotenv
+
+    # 尝试从项目根目录加载 .env（支持 MODEL_* 环境变量）
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file, override=False)  # 不覆盖已存在的环境变量
+except ImportError:
+    # python-dotenv 未安装，跳过 .env 加载
+    pass
 
 # Default configuration
 DEFAULT_MODEL_NAME = "autoglm-phone-9b"

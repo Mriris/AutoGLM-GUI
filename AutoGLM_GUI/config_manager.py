@@ -199,14 +199,15 @@ class UnifiedConfigManager:
         """
         从环境变量加载配置.
 
-        读取环境变量：
-        - AUTOGLM_BASE_URL
-        - AUTOGLM_MODEL_NAME
-        - AUTOGLM_API_KEY
+        读取环境变量（优先级：MODEL_* > AUTOGLM_*）：
+        - MODEL_BASE_URL / AUTOGLM_BASE_URL
+        - MODEL_NAME / AUTOGLM_MODEL_NAME
+        - MODEL_API_KEY / AUTOGLM_API_KEY
         """
-        base_url = os.getenv("AUTOGLM_BASE_URL")
-        model_name = os.getenv("AUTOGLM_MODEL_NAME")
-        api_key = os.getenv("AUTOGLM_API_KEY")
+        # 优先使用 MODEL_* 变量（用于 .env 文件），否则使用 AUTOGLM_* 变量（兼容旧版）
+        base_url = os.getenv("MODEL_BASE_URL") or os.getenv("AUTOGLM_BASE_URL")
+        model_name = os.getenv("MODEL_NAME") or os.getenv("AUTOGLM_MODEL_NAME")
+        api_key = os.getenv("MODEL_API_KEY") or os.getenv("AUTOGLM_API_KEY")
 
         self._env_layer = ConfigLayer(
             base_url=base_url if base_url else None,
