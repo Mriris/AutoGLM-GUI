@@ -16,6 +16,7 @@ class APIModelConfig(BaseModel):
 class APIAgentConfig(BaseModel):
     max_steps: int = 100
     device_id: str | None = None
+    device_type: str = "adb"  # "adb" or "hdc"
     lang: str = "cn"
     system_prompt: str | None = None
     verbose: bool = True

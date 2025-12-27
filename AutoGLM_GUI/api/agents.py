@@ -37,6 +37,7 @@ def init_agent(request: InitRequest) -> dict:
     from AutoGLM_GUI.adb_plus import ADBKeyboardInstaller
     from AutoGLM_GUI.config_manager import config_manager
     from AutoGLM_GUI.logger import logger
+    from phone_agent.device_factory import set_device_type, DeviceType
 
     req_model_config = request.model or APIModelConfig()
     req_agent_config = request.agent or APIAgentConfig()
@@ -47,25 +48,37 @@ def init_agent(request: InitRequest) -> dict:
             status_code=400, detail="device_id is required in agent_config"
         )
 
+    # Set device type (adb or hdc)
+    device_type_str = req_agent_config.device_type.lower()
+    if device_type_str == "hdc":
+        set_device_type(DeviceType.HDC)
+        logger.info(f"Device type set to HDC for device {device_id}")
+    else:
+        set_device_type(DeviceType.ADB)
+        logger.info(f"Device type set to ADB for device {device_id}")
+
     # 热重载配置文件（支持运行时手动修改）
     config_manager.load_file_config()
     config_manager.sync_to_env()
     config.refresh_from_env()
 
-    # 检查并自动安装 ADB Keyboard
-    logger.info(f"Checking ADB Keyboard for device {device_id}...")
-    installer = ADBKeyboardInstaller(device_id=device_id)
-    status = installer.get_status()
+    # 检查并自动安装 ADB Keyboard（仅限 ADB 设备）
+    if device_type_str == "adb":
+        logger.info(f"Checking ADB Keyboard for device {device_id}...")
+        installer = ADBKeyboardInstaller(device_id=device_id)
+        status = installer.get_status()
 
-    if not (status["installed"] and status["enabled"]):
-        logger.info(f"Setting up ADB Keyboard for device {device_id}...")
-        success, message = installer.auto_setup()
-        if success:
-            logger.info(f"✓ Device {device_id}: {message}")
+        if not (status["installed"] and status["enabled"]):
+            logger.info(f"Setting up ADB Keyboard for device {device_id}...")
+            success, message = installer.auto_setup()
+            if success:
+                logger.info(f"✓ Device {device_id}: {message}")
+            else:
+                logger.warning(f"✗ Device {device_id}: {message}")
         else:
-            logger.warning(f"✗ Device {device_id}: {message}")
+            logger.info(f"✓ Device {device_id}: ADB Keyboard ready")
     else:
-        logger.info(f"✓ Device {device_id}: ADB Keyboard ready")
+        logger.info(f"Skipping ADB Keyboard check for HDC device {device_id}")
 
     base_url = req_model_config.base_url or config.base_url
     api_key = req_model_config.api_key or config.api_key
