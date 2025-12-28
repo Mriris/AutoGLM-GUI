@@ -98,6 +98,7 @@ def init_agent(request: InitRequest) -> dict:
         temperature=req_model_config.temperature,
         top_p=req_model_config.top_p,
         frequency_penalty=req_model_config.frequency_penalty,
+        extra_body={"repetition_penalty": req_model_config.repetition_penalty},
     )
 
     agent_config = AgentConfig(

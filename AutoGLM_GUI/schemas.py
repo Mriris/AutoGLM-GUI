@@ -1,25 +1,51 @@
 """Shared Pydantic models for the AutoGLM-GUI API."""
 
+import os
 from pydantic import BaseModel, Field
+
+
+def _get_env_float(key: str, default: float) -> float:
+    """从环境变量获取浮点数，失败则返回默认值."""
+    try:
+        return float(os.getenv(key, default))
+    except (ValueError, TypeError):
+        return default
+
+
+def _get_env_int(key: str, default: int) -> int:
+    """从环境变量获取整数，失败则返回默认值."""
+    try:
+        return int(os.getenv(key, default))
+    except (ValueError, TypeError):
+        return default
+
+
+def _get_env_bool(key: str, default: bool) -> bool:
+    """从环境变量获取布尔值，失败则返回默认值."""
+    value = os.getenv(key)
+    if value is None:
+        return default
+    return value.lower() in ("true", "1", "yes", "on")
 
 
 class APIModelConfig(BaseModel):
     base_url: str | None = None
     api_key: str | None = None
     model_name: str | None = None
-    max_tokens: int = 3000
-    temperature: float = 0.0
-    top_p: float = 0.85
-    frequency_penalty: float = 0.2
+    max_tokens: int = _get_env_int("MODEL_MAX_TOKENS", 3000)
+    temperature: float = _get_env_float("MODEL_TEMPERATURE", 0.7)
+    top_p: float = _get_env_float("MODEL_TOP_P", 0.85)
+    frequency_penalty: float = _get_env_float("MODEL_FREQUENCY_PENALTY", 0.5)
+    repetition_penalty: float = _get_env_float("MODEL_REPETITION_PENALTY", 1.1)
 
 
 class APIAgentConfig(BaseModel):
-    max_steps: int = 100
-    device_id: str | None = None
-    device_type: str = "adb"  # "adb" or "hdc"
-    lang: str = "cn"
-    system_prompt: str | None = None
-    verbose: bool = True
+    max_steps: int = _get_env_int("AGENT_MAX_STEPS", 100)
+    device_id: str | None = None  # 由前端传递，不从环境变量读取
+    device_type: str = "adb"  # 由前端传递，不从环境变量读取
+    lang: str = os.getenv("AGENT_LANG", "cn")
+    system_prompt: str | None = os.getenv("AGENT_SYSTEM_PROMPT")
+    verbose: bool = _get_env_bool("AGENT_VERBOSE", True)
 
 
 class InitRequest(BaseModel):
