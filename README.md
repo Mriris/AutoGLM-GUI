@@ -1,265 +1,314 @@
 # AutoGLM-GUI
 
-AutoGLM 手机助手的现代化 Web 图形界面 - 让 AI 自动化操作 Android 设备变得简单
+**完全可控的本地手机智能体后端服务**
 
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)
-[![PyPI](https://img.shields.io/pypi/v/autoglm-gui)](https://pypi.org/project/autoglm-gui/)
-<br/>
-  <a href="https://qm.qq.com/q/J5eAs9tn0W" target="__blank">
-    <strong>欢迎加入讨论交流群</strong>
-  </a>
-## ✨ 特性
+AutoGLM-GUI 是 Harmony Agent 项目的 PC 端后端服务，提供手机智能体的核心控制逻辑。通过封装设备控制能力（HDC/ADB）和大模型推理服务，实现对手机的自动化操作。
 
-- **多设备并发控制** - 同时管理和控制多个 Android 设备，设备间状态完全隔离
-- **对话式任务管理** - 通过聊天界面控制 Android 设备
-- **实时屏幕预览** - 基于 scrcpy 的低延迟视频流，随时查看设备正在执行的操作
-- **直接操控手机** - 在实时画面上直接点击、滑动操作，支持精准坐标转换和视觉反馈
-- **零配置部署** - 支持任何 OpenAI 兼容的 LLM API
-- **ADB 深度集成** - 通过 Android Debug Bridge 直接控制设备
-- **模块化界面** - 清晰的侧边栏 + 设备面板设计，功能分离明确
+## 项目特性
 
-## 📥 快速下载
+### 本地化与隐私保护
+- **本地大模型支持**：支持 vLLM、llama.cpp 等本地大模型服务，数据不外泄
+- **OpenAI 兼容接口**：既可使用本地服务，也支持云端 API
+- **完全可审计**：开源代码，所有操作流程透明可见
 
-**一键下载桌面版（免配置环境）：**
+### 多平台设备支持
+- **HarmonyOS**：通过 HDC 完整支持鸿蒙系统
+- **Android**：通过 ADB 支持安卓设备
+- **统一抽象**：DeviceFactory 设计模式，易于扩展新平台
 
-<div align="center">
+### 智能体核心能力
+- **屏幕理解**：自动截图并通过视觉模型分析当前界面
+- **智能决策**：基于大模型的自然语言任务理解和操作规划
+- **精确执行**：支持点击、滑动、输入、启动应用等完整操作集
 
-| 操作系统 | 下载链接 | 说明 |
-|---------|---------|------|
-| 🪟 **Windows** (x64) | [📦 下载便携版 EXE](https://github.com/suyiiyii/AutoGLM-GUI/releases/download/v1.0.2/AutoGLM.GUI.1.0.2.exe) | 适用于 Windows 10/11，免安装 |
-| 🍎 **macOS** (Apple Silicon) | [📦 下载 DMG](https://github.com/suyiiyii/AutoGLM-GUI/releases/download/v1.0.2/AutoGLM.GUI-1.0.2-arm64.dmg) | 适用于 M 芯片 Mac |
-| 🐧 **Linux** (x64) | [📦 下载 AppImage](https://github.com/suyiiyii/AutoGLM-GUI/releases/download/v1.0.2/AutoGLM.GUI-1.0.2.AppImage) \| [deb](https://github.com/suyiiyii/AutoGLM-GUI/releases/download/v1.0.2/autoglm-gui_1.0.2_amd64.deb) \| [tar.gz](https://github.com/suyiiyii/AutoGLM-GUI/releases/download/v1.0.2/autoglm-gui-1.0.2.tar.gz) | 通用格式，支持主流发行版 |
+### REST API 服务
+- **FastAPI 框架**：高性能异步 API 服务
+- **Socket.IO 支持**：实时视频流传输（可选）
+- **标准化接口**：便于前端集成和第三方调用
 
-</div>
+## 系统架构
 
-**使用说明：**
-- **Windows**: 下载后直接双击 `.exe` 文件运行，无需安装
-- **macOS**: 下载后双击 `.dmg` 文件，拖拽到应用程序文件夹。首次打开可能需要在「系统设置 → 隐私与安全性」中允许运行
-- **Linux**:
-  - **AppImage**（推荐）: 下载后添加可执行权限 `chmod +x AutoGLM*.AppImage`，然后直接运行
-  - **deb**: 适用于 Debian/Ubuntu 系统，使用 `sudo dpkg -i autoglm*.deb` 安装
-  - **tar.gz**: 便携版，解压后运行 `./AutoGLM\ GUI/autoglm-gui`
+![系统总体架构](doc/image/总体架构图.png)
 
-> 💡 **提示**: 桌面版已内置所有依赖（Python、ADB 等），无需手动配置环境。首次运行时需配置模型服务 API。
+核心组件说明：
+- **API 服务层**：提供 REST API 接口，处理前端请求
+- **PhoneAgent**：智能体核心，实现"感知-决策-执行"闭环
+- **DeviceFactory**：设备适配层，抽象不同平台的控制接口
+- **ModelClient**：大模型客户端，支持 OpenAI 兼容 API
 
----
+## 快速开始
 
-**或者使用 Python 包（需要 Python 环境）：**
-
-```bash
-# 通过 pip 安装（推荐）
-pip install autoglm-gui
-
-# 或使用 uvx 免安装运行（需先安装 uv）
-uvx autoglm-gui
-```
-
-## 📸 界面预览
-
-### 任务开始
-![任务开始](https://github.com/user-attachments/assets/b8cb6fbc-ca5b-452c-bcf4-7d5863d4577a)
-
-### 任务执行完成
-![任务结束](https://github.com/user-attachments/assets/b32f2e46-5340-42f5-a0db-0033729e1605)
-
-### 多设备控制
-![多设备控制](https://github.com/user-attachments/assets/f826736f-c41f-4d64-bf54-3ca65c69068d)
-
-## 🚀 快速开始
-
-## 🎯 模型服务配置
-
-AutoGLM-GUI 只需要一个 OpenAI 兼容的模型服务。你可以：
-
-- 使用官方已托管的第三方服务
-  - 智谱 BigModel：`--base-url https://open.bigmodel.cn/api/paas/v4`，`--model autoglm-phone`，`--apikey <你的 API Key>`
-  - ModelScope：`--base-url https://api-inference.modelscope.cn/v1`，`--model ZhipuAI/AutoGLM-Phone-9B`，`--apikey <你的 API Key>`
-- 或自建服务：参考上游项目的[部署文档](https://github.com/zai-org/Open-AutoGLM/blob/main/README.md)用 vLLM/SGLang 部署 `zai-org/AutoGLM-Phone-9B`，启动 OpenAI 兼容端口后将 `--base-url` 指向你的服务。
-
-示例：
-
-```bash
-# 使用智谱 BigModel
-pip install autoglm-gui
-autoglm-gui \
-  --base-url https://open.bigmodel.cn/api/paas/v4 \
-  --model autoglm-phone \
-  --apikey sk-xxxxx
-
-# 使用 ModelScope
-pip install autoglm-gui
-autoglm-gui \
-  --base-url https://api-inference.modelscope.cn/v1 \
-  --model ZhipuAI/AutoGLM-Phone-9B \
-  --apikey sk-xxxxx
-
-# 指向你自建的 vLLM/SGLang 服务
-pip install autoglm-gui
-autoglm-gui --base-url http://localhost:8000/v1 --model autoglm-phone-9b
-```
-
-### 前置要求
+### 环境要求
 
 - Python 3.10+
-- 已开启 USB 调试的 Android 设备
-- 已安装 ADB 并添加到系统 PATH
-- 一个 OpenAI 兼容的 API 端点
+- Windows 10/11、macOS 或 Linux
+- HDC 工具（用于 HarmonyOS 设备）或 ADB（用于 Android 设备）
+- 大模型服务（本地或云端）
 
-### 快捷运行（推荐）
+### 安装
 
-**无需手动准备环境，直接安装运行：**
-
+1. **克隆项目**
 ```bash
-# 通过 pip 安装并启动
-pip install autoglm-gui
-autoglm-gui --base-url http://localhost:8080/v1
+git clone <repository-url>
+cd harmony_agent/AutoGLM-GUI
 ```
 
-也可以使用 uvx 免安装启动，自动启动最新版（需已安装 uv，[安装教程](https://docs.astral.sh/uv/getting-started/installation/)）：
+2. **安装依赖**
 
+使用 uv（推荐）：
 ```bash
-uvx autoglm-gui --base-url http://localhost:8080/v1
-```
-
-### 传统安装
-
-```bash
-# 从源码安装
-git clone https://github.com/your-repo/AutoGLM-GUI.git
-cd AutoGLM-GUI
 uv sync
-
-# 构建前端（必须）
-uv run python scripts/build.py
-
-# 启动服务
-uv run autoglm-gui --base-url http://localhost:8080/v1
 ```
 
-启动后，在浏览器中打开 http://localhost:8000 即可开始使用！
-
-## 🔄 升级指南
-
-### 检查当前版本
-
+或使用 pip：
 ```bash
-# 查看已安装的版本
-pip show autoglm-gui
-
-# 或使用命令行参数
-autoglm-gui --version
+pip install -e .
 ```
 
-### 升级到最新版本
+### 准备大模型服务
 
-**使用 pip 升级：**
+**方案一：本地部署（推荐）**
 
+**方案二：使用云端服务**
+
+配置环境变量：
 ```bash
-# 升级到最新版本
-pip install --upgrade autoglm-gui
+export OPENAI_API_KEY="your-api-key"
+export OPENAI_BASE_URL="https://api.openai.com/v1"
 ```
 
-## 📖 使用说明
+![本地部署大模型](doc/image/本地部署大模型.png)
 
-### 多设备管理
+### 连接设备
 
-AutoGLM-GUI 支持同时控制多个 Android 设备：
-
-1. **设备列表** - 左侧边栏自动显示所有已连接的 ADB 设备
-2. **设备选择** - 点击设备卡片切换到对应的控制面板
-3. **状态指示** - 清晰显示每个设备的在线状态和初始化状态
-4. **状态隔离** - 每个设备有独立的对话历史、配置和视频流
-
-**设备状态说明**：
-- 🟢 绿点：设备在线
-- ⚪ 灰点：设备离线
-- ✓ 标记：设备已初始化
-
-### AI 自动化模式
-
-1. **连接设备** - 启用 USB 调试并通过 ADB 连接设备（支持 USB 和 WiFi）
-2. **选择设备** - 在左侧边栏选择要控制的设备
-3. **初始化** - 点击"初始化设备"按钮配置 Agent
-4. **对话** - 描述你想要做什么（例如："去美团点一杯霸王茶姬的伯牙绝弦"）
-5. **观察** - Agent 会逐步执行操作，每一步的思考过程和动作都会实时显示
-
-### 手动控制模式
-
-除了 AI 自动化，你也可以直接在实时画面上操控手机：
-
-1. **实时画面** - 设备面板右侧显示手机屏幕的实时视频流（基于 scrcpy）
-2. **点击操作** - 直接点击画面中的任意位置，操作会立即发送到手机
-3. **滑动手势** - 按住鼠标拖动实现滑动操作（支持滚轮滚动）
-4. **视觉反馈** - 每次操作都会显示涟漪动画和成功/失败提示
-5. **精准转换** - 自动处理屏幕缩放和坐标转换，确保操作位置准确
-6. **显示模式** - 支持自动、视频流、截图三种显示模式切换
-
-**技术细节**：
-- 使用 scrcpy 提供低延迟（~30-50ms）的 H.264 视频流
-- 前端自动获取设备实际分辨率（如 1080x2400）
-- 智能处理视频流缩放（如 576x1280）与设备分辨率的映射
-- 支持 letterbox 黑边的精确坐标计算
-- 颗粒化触摸事件支持（DOWN、MOVE、UP）实现流畅的手势操作
-
-## 🏗️ 架构设计
-
-### 多设备并发架构
-
-AutoGLM-GUI 采用简化的多设备并发架构，支持同时管理多个 Android 设备：
-
-**后端设计**：
-- 使用字典管理多个 `PhoneAgent` 实例：`agents: dict[str, PhoneAgent]`
-- 每个设备有独立的 `scrcpy` 视频流实例
-- 设备级别的锁机制，避免不同设备间的阻塞
-- 所有 API 接口支持 `device_id` 参数进行设备路由
-
-**前端设计**：
-- 使用 `Map<string, DeviceState>` 管理每个设备的独立状态
-- 组件化设计，功能职责清晰分离：
-  - `DeviceCard` - 单个设备信息卡片
-  - `DeviceSidebar` - 设备列表侧边栏
-  - `DevicePanel` - 设备操作面板（ChatBox + Screen Monitor）
-- 设备状态完全隔离，互不影响
-
-**核心特点**：
-- ✅ 无任务队列，简化设计
-- ✅ 无复杂调度，每个设备独立运行
-- ✅ 实时 WebSocket 通信，支持流式响应
-- ✅ 自动设备发现和状态同步（每 3 秒刷新）
-
-## 🛠️ 开发指南
-
-### 快速开发
-
+**HarmonyOS 设备**：
+1. 开启开发者模式（设置 → 关于手机 → 连续点击版本号 7 次）
+2. 开启 USB 调试（系统和更新 → 开发人员选项 → USB 调试）
+3. 连接设备并授权
+4. 验证连接：
 ```bash
-# 后端开发（自动重载）
-uv run autoglm-gui --base-url http://localhost:8080/v1 --reload
-
-# 前端开发服务器（热重载）
-cd frontend && pnpm dev
-
-### 构建和打包
-
-```bash
-# 仅构建前端
-uv run python scripts/build.py
-
-# 构建完整包
-uv run python scripts/build.py --pack
+hdc list targets
 ```
 
-## 📝 开源协议
+**Android 设备**：
+```bash
+adb devices
+```
 
-Apache License 2.0
+### 启动服务
 
+```bash
+uv run python -m AutoGLM_GUI --host 0.0.0.0 --port 7860
+```
 
-### 许可证说明
+服务启动后会显示：
+- REST API 地址：`http://0.0.0.0:7860`
+- API 文档：`http://0.0.0.0:7860/docs`
 
-AutoGLM-GUI 使用 MIT 许可证。但是，它打包了 ADB Keyboard APK (`com.android.adbkeyboard`)，该组件使用 GPL-2.0 许可证。ADB Keyboard 组件作为独立工具使用，不影响 AutoGLM-GUI 本身的 MIT 许可。
+## 任务执行流程
 
-详见：`AutoGLM_GUI/resources/apks/ADBKeyBoard.LICENSE.txt`
+![任务执行时序图](doc/image/时序图.png)
 
-## 🙏 致谢
+核心执行步骤：
+1. **接收任务**：通过 `/api/chat` 接口接收自然语言任务
+2. **创建智能体**：初始化 PhoneAgent 实例
+3. **循环执行**：
+   - 截取屏幕
+   - 调用大模型分析并决策
+   - 执行操作（点击/滑动/输入等）
+   - 判断任务是否完成
+4. **返回结果**：返回执行结果和步骤数
 
-本项目基于 [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) 构建，感谢 zai-org 团队在 AutoGLM 上的卓越工作。
+![后端智能体执行过程](doc/image/后端智能体执行过程截图.png)
+
+## API 文档
+
+### 初始化智能体
+
+**POST** `/api/init`
+
+请求体：
+```json
+{
+  "device_id": "FMR0223C13000649",
+  "device_type": "hdc",
+  "model_name": "qwen-vl-max",
+  "api_base": "http://localhost:8000/v1",
+  "api_key": "EMPTY"
+}
+```
+
+响应：
+```json
+{
+  "session_id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "initialized"
+}
+```
+
+### 执行任务
+
+**POST** `/api/chat`
+
+请求体：
+```json
+{
+  "session_id": "550e8400-e29b-41d4-a716-446655440000",
+  "user_input": "打开设置，开启蓝牙"
+}
+```
+
+响应：
+```json
+{
+  "result": "任务完成：已成功开启蓝牙",
+  "steps": 5,
+  "session_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+完整 API 文档请访问：`http://localhost:7860/docs`
+
+## 目录结构
+
+```
+AutoGLM-GUI/
+├── AutoGLM_GUI/           # 后端服务主模块
+│   ├── api/               # REST API 路由
+│   │   ├── agents.py      # 智能体管理接口
+│   │   ├── devices.py     # 设备管理接口
+│   │   └── control.py     # 设备控制接口
+│   ├── socketio_server.py # Socket.IO 服务
+│   ├── state.py           # 运行时状态管理
+│   └── server.py          # ASGI 应用入口
+├── phone_agent/           # 智能体核心模块
+│   ├── agent.py           # PhoneAgent 主逻辑
+│   ├── actions/           # 动作执行器
+│   │   └── handler.py     # 点击/滑动/输入等操作
+│   ├── model/             # 模型客户端
+│   │   └── client.py      # OpenAI 兼容接口
+│   ├── device_factory.py  # 设备抽象工厂
+│   ├── hdc/               # HarmonyOS 设备适配
+│   │   ├── screenshot.py  # 截图功能
+│   │   ├── input.py       # 输入控制
+│   │   └── control.py     # 设备控制
+│   └── adb/               # Android 设备适配
+└── pyproject.toml         # 项目配置文件
+```
+
+## 核心模块说明
+
+### PhoneAgent（智能体核心）
+
+`PhoneAgent` 实现了"感知-决策-执行"的完整闭环：
+
+```python
+class PhoneAgent:
+    def run(self, task: str) -> dict:
+        """执行任务的主循环"""
+        while not self.is_finished:
+            # 1. 感知：截取屏幕
+            screenshot = self.device.get_screenshot()
+
+            # 2. 决策：调用大模型
+            action = self.model_client.decide(task, screenshot)
+
+            # 3. 执行：执行操作
+            self.action_handler.execute(action)
+
+            # 4. 判断是否完成
+            if action.type == "finish":
+                self.is_finished = True
+```
+
+### DeviceFactory（设备适配层）
+
+通过工厂模式抽象不同平台的设备控制能力：
+
+```python
+class DeviceFactory:
+    def get_screenshot(device_id: str) -> Screenshot
+    def tap(device_id: str, x: int, y: int) -> bool
+    def swipe(device_id: str, x1, y1, x2, y2) -> bool
+    def type_text(device_id: str, text: str) -> bool
+    def launch_app(device_id: str, package: str) -> bool
+```
+
+### ModelClient（大模型客户端）
+
+支持 OpenAI 兼容接口，既可使用本地服务也可使用云端 API：
+
+- 自动处理多模态消息（文本 + 图像）
+- 解析模型返回的操作指令
+- 支持函数调用和结构化输出
+
+## 配置说明
+
+### 环境变量
+
+```bash
+# 大模型配置
+OPENAI_API_KEY=your-api-key
+OPENAI_BASE_URL=http://localhost:8000/v1
+MODEL_NAME=qwen-vl-max
+
+# 服务配置
+HOST=0.0.0.0
+PORT=7860
+```
+
+### 设备配置
+
+支持的设备类型：
+- `hdc`：HarmonyOS 设备
+- `adb`：Android 设备
+
+## 开发指南
+
+### 添加新的设备平台
+
+1. 在 `phone_agent/` 下创建新的设备适配模块
+2. 实现以下接口：
+   - `get_screenshot()`
+   - `tap()`
+   - `swipe()`
+   - `type_text()`
+   - `launch_app()`
+3. 在 `device_factory.py` 中注册新平台
+
+### 自定义操作类型
+
+在 `phone_agent/actions/handler.py` 中添加新的 Action 类型：
+
+```python
+class CustomAction(Action):
+    def execute(self, device_id: str) -> bool:
+        # 实现自定义操作
+        pass
+```
+
+## 运行效果
+
+![执行结果截图 1](doc/image/执行结果截图1.png)
+
+![执行结果截图 2](doc/image/执行结果截图2.png)
+
+## 技术栈
+
+- **Web 框架**：FastAPI
+- **异步运行时**：asyncio
+- **HTTP 客户端**：httpx
+- **设备控制**：subprocess (HDC/ADB)
+- **图像处理**：Pillow
+- **类型检查**：Pydantic
+
+## 安全考量
+
+- **本地优先**：推荐使用本地大模型，数据不外泄
+- **权限控制**：所有设备操作需要明确授权
+- **敏感信息保护**：支付等敏感界面会被自动识别并跳过
+- **代码审计**：完全开源，用户可审查所有代码逻辑
+
+## 相关项目
+
+- [Agent (HarmonyOS App)](../Agent/) - 鸿蒙端前端应用
